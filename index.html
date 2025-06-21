@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>貓咪拔牙術後康復互動指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutrals (Inspired by warm neutrals and complimentary colors for a calm, supportive feel) -->
+    <!-- Application Structure Plan: A single-page application with a sticky top navigation for seamless scrolling between thematic sections. The structure is task-oriented, guiding the user from immediate post-op care (Monitoring) to proactive healing strategies (Nutrition, Acupressure) and long-term support (Finding a Vet). This non-linear, thematic structure is more intuitive for a pet owner in a stressful situation than the report's linear chapter format. Key interactions include interactive charts for data comparison (food/therapy safety), clickable cards to reveal detailed information without overwhelming the user, and clear visual cues (icons, color-coding) to highlight critical warnings and recommendations. -->
+    <!-- Visualization & Content Choices: 1. Post-Op Monitoring (Info): Goal: Inform & Warn. Method: Interactive cards with Unicode icons for key areas, with a distinct red-highlighted section for "Red Flag" symptoms. Justification: More scannable and visually engaging than a long text list. 2. Nutrition Matrix (Compare): Goal: Compare food suitability. Method: Chart.js horizontal bar chart. Justification: Visually represents the suitability scores from the report's table, making comparison instant. Library: Chart.js (Canvas). 3. Aromatherapy Safety Spectrum (Compare): Goal: Compare safety levels of aromatic therapies. Method: Chart.js horizontal bar chart with color-coding (green-to-red). Justification: Transforms the abstract risk levels from the report's table into an intuitive visual spectrum of safety. Library: Chart.js (Canvas). 4. Acupressure Guide (Organize/Inform): Goal: Organize and explain key acupressure points. Method: Interactive HTML/CSS cards in a grid layout. Justification: Without images/SVG, cards provide a structured, clear way to present each point's location, function, and technique, superior to a simple text block. 5. Vet Finding Process (Organize): Goal: Show the steps to find a suitable vet. Method: A flowchart created with styled HTML divs and flexbox. Justification: Visualizes the process, making it easier to follow than a text description. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8f7f4; 
+            color: #3d3d3d;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 500px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .nav-link.active {
+            color: #4a6c6f; 
+            border-bottom-color: #4a6c6f;
+        }
+        .card-expand-content {
+            display: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .card-expand-content.open {
+            display: block;
+            max-height: 1000px;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="sticky top-0 bg-white/80 backdrop-blur-lg z-50 shadow-sm">
+        <nav class="container mx-auto px-4">
+            <div class="flex justify-center items-center h-16 space-x-4 md:space-x-8 overflow-x-auto">
+                <a href="#monitoring" class="nav-link text-gray-600 hover:text-[#4a6c6f] border-b-2 border-transparent pb-1 text-sm md:text-base whitespace-nowrap">關鍵監控</a>
+                <a href="#nutrition" class="nav-link text-gray-600 hover:text-[#4a6c6f] border-b-2 border-transparent pb-1 text-sm md:text-base whitespace-nowrap">營養策略</a>
+                <a href="#therapies" class="nav-link text-gray-600 hover:text-[#4a6c6f] border-b-2 border-transparent pb-1 text-sm md:text-base whitespace-nowrap">安全輔助療法</a>
+                <a href="#acupressure" class="nav-link text-gray-600 hover:text-[#4a6c6f] border-b-2 border-transparent pb-1 text-sm md:text-base whitespace-nowrap">穴位按摩</a>
+                <a href="#vet" class="nav-link text-gray-600 hover:text-[#4a6c6f] border-b-2 border-transparent pb-1 text-sm md:text-base whitespace-nowrap">尋找獸醫</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="intro" class="text-center mb-16 pt-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#4a6c6f] mb-4">貓咪拔牙術後康復指南</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">一份結合獸醫學與輔助療法的互動式照護計畫，陪伴您與愛貓平穩度過最關鍵的恢復期。</p>
+        </section>
+
+        <section id="monitoring" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-[#4a6c6f] mb-2 text-center">Step 1: 關鍵監控</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">術後初期，飼主是第一道防線。請密切觀察以下五大指標，它們是判斷貓咪恢復狀況與疼痛程度的鑰匙。</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="font-bold text-xl text-[#5a8f7b] mb-3 flex items-center"><span class="text-2xl mr-3">🍽️</span>食慾與飲水</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2">
+                        <li>24小時內食慾差屬正常。</li>
+                        <li>記錄每日進食與飲水量。</li>
+                        <li class="font-bold text-red-600">警訊：超過24小時完全拒食。</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="font-bold text-xl text-[#5a8f7b] mb-3 flex items-center"><span class="text-2xl mr-3">🤕</span>疼痛跡象</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2">
+                        <li>躲藏、不願移動、母雞蹲。</li>
+                        <li>眼睛瞇、耳朵平貼、肌肉緊繃。</li>
+                        <li>對觸摸敏感或發出哈氣聲。</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="font-bold text-xl text-[#5a8f7b] mb-3 flex items-center"><span class="text-2xl mr-3">👄</span>傷口狀況</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2">
+                        <li>口水帶少量粉色血絲屬正常。</li>
+                        <li class="font-bold text-red-600">警訊：持續流鮮血、流膿、口臭。</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="font-bold text-xl text-[#5a8f7b] mb-3 flex items-center"><span class="text-2xl mr-3">😴</span>精神與活動力</h3>
+                     <ul class="list-disc list-inside text-gray-700 space-y-2">
+                        <li>術後嗜睡屬正常。</li>
+                        <li>應在24-48小時內逐漸恢復。</li>
+                        <li class="font-bold text-red-600">警訊：過度嗜睡、對環境無反應。</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                     <h3 class="font-bold text-xl text-[#5a8f7b] mb-3 flex items-center"><span class="text-2xl mr-3">🚽</span>排泄狀況</h3>
+                     <ul class="list-disc list-inside text-gray-700 space-y-2">
+                        <li>記錄排尿與排便頻率。</li>
+                        <li>藥物可能導致暫時性便秘。</li>
+                        <li class="font-bold text-red-600">警訊：超過48小時未排便或排尿困難。</li>
+                    </ul>
+                </div>
+                 <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-xl text-red-600 mb-3 flex items-center"><span class="text-2xl mr-3">⚠️</span>用藥安全須知</h3>
+                    <p class="text-sm">請務必遵從獸醫處方，完成所有止痛藥(NSAIDs)與抗生素療程。確保貓咪充足飲水，是降低止痛藥腎臟風險的關鍵。切勿與類固醇藥物併用。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="nutrition" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-[#4a6c6f] mb-2 text-center">Step 2: 營養策略</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">吃對食物不僅能提供能量，更是主動的抗發炎治療。選擇正確的質地與營養，加速身體修復。</p>
+             <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold text-[#5a8f7b] mb-4 text-center">急性期飲食適用性</h3>
+                        <p class="text-center text-gray-600 mb-6 text-sm">此圖表比較了不同食物選項在術後急性恢復期的適用性分數（滿分5分），分數越高代表越推薦。選擇質地軟爛、無需咀嚼的食物是首要原則。</p>
+                        <div class="chart-container">
+                            <canvas id="foodSuitabilityChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <h4 class="font-bold text-lg text-[#5a8f7b] mb-2">關鍵營養素：$Omega-3$</h4>
+                            <p class="text-sm text-gray-600">$Omega-3$ (EPA+DHA)是強效的天然抗發炎劑，能從根本上減輕牙齦紅腫熱痛。每日建議劑量為每公斤體重30-50mg。務必在獸醫指導下使用。</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 card-expand-trigger cursor-pointer">
+                            <h4 class="font-bold text-lg text-[#5a8f7b] mb-2 flex justify-between items-center">自製療癒雞魚泥食譜 <span>▼</span></h4>
+                            <div class="card-expand-content mt-4 text-sm text-gray-600 space-y-2">
+                                <p><strong>材料:</strong> 去皮雞肉100g、鯛魚/鱈魚50g、寵物魚油、無鹽雞湯。</p>
+                                <p><strong>步驟:</strong> 1. 肉類蒸熟。 2. 與雞湯一同用調理機打成滑順肉泥。 3. 待降溫後拌入魚油即可。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="therapies" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-[#4a6c6f] mb-2 text-center">Step 3: 安全輔助療法</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">「天然」不等於「絕對安全」。了解不同輔助療法的原理與風險，為愛貓做出最明智的選擇。</p>
+             <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold text-[#5a8f7b] mb-4 text-center">芳香療法安全光譜</h3>
+                        <p class="text-center text-gray-600 mb-6 text-sm">貓咪肝臟無法代謝精油。此圖表顯示了不同芳香療法的安全性，分數越高越安全。請選擇純露或費洛蒙作為精油的替代品。</p>
+                        <div class="chart-container">
+                            <canvas id="safetySpectrumChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h3 class="text-2xl font-bold text-[#5a8f7b] mb-4 text-center">實證補充品選項</h3>
+                        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg">
+                            <h4 class="font-bold">絕對禁用：精油</h4>
+                            <p class="text-sm">茶樹、薄荷、柑橘、薰衣草等常見精油對貓有毒，無論是擴香、塗抹或接觸，都應完全避免。</p>
+                        </div>
+                        <div class="bg-green-50 border-l-4 border-green-500 text-green-800 p-4 rounded-lg">
+                             <h4 class="font-bold">安全推薦：純露 & 費洛蒙</h4>
+                            <p class="text-sm">推薦使用羅馬洋甘菊純露進行短時間擴香，或使用貓科費洛蒙(Feliway)產品，兩者都能安全有效地幫助貓咪放鬆。</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 card-expand-trigger cursor-pointer">
+                            <h4 class="font-bold text-lg text-[#5a8f7b] mb-2 flex justify-between items-center">關於CBD的提醒 <span>▼</span></h4>
+                            <div class="card-expand-content mt-4 text-sm text-gray-600 space-y-2">
+                                <p>CBD (大麻二酚) 在抗發炎與止痛上展現潛力。在台灣，合法使用需憑獸醫處方申請專案進口。請務必選擇零THC、有第三方檢驗報告的寵物專用產品，並在獸醫指導下使用。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="acupressure" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-[#4a6c6f] mb-2 text-center">Step 4: 療癒之觸 - 穴位按摩</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">中獸醫穴位按摩是安全無創的輔助療法，能行氣活血、寧心安神。請在貓咪放鬆時，以指腹輕柔按壓。</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="font-bold text-xl text-[#5a8f7b] mb-2">百會穴</h3>
+                    <p class="text-sm text-gray-500 mb-3">位置：頭頂正中，雙耳尖連線中點。</p>
+                    <p class="text-gray-700">功效：鎮靜安神、緩解頭部及全身性疼痛。</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="font-bold text-xl text-[#5a8f7b] mb-2">安神穴</h3>
+                    <p class="text-sm text-gray-500 mb-3">位置：雙耳基部後下方凹陷處。</p>
+                    <p class="text-gray-700">功效：處理焦慮、緊張、不安等心神不寧問題。</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="font-bold text-xl text-[#5a8f7b] mb-2">印堂穴</h3>
+                    <p class="text-sm text-gray-500 mb-3">位置：兩眼之間，鼻樑上方中點。</p>
+                    <p class="text-gray-700">功效：安神定志，緩解顏面部疼痛。</p>
+                </div>
+                 <div class="md:col-span-2 lg:col-span-3 bg-[#e9efee] border-l-4 border-[#4a6c6f] text-[#3d3d3d] p-4 rounded-lg">
+                    <h4 class="font-bold">「安神優先」原則</h4>
+                    <p class="text-sm">從貓咪最喜歡被觸摸的頭部開始，建立信任與放鬆的連結。當貓咪發出呼嚕聲、身體變柔軟時，再嘗試觸碰四肢的穴位（如合谷穴）。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="vet" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-[#4a6c6f] mb-2 text-center">Step 5: 尋找整合醫療夥伴</h2>
+             <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">一位理念契合、願意開放討論的獸醫師是您最寶貴的資源。以下是位於台北市中山區周邊，明確提供整合醫療服務的診所推薦。</p>
+            <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div class="bg-gray-50 p-6 rounded-lg border">
+                         <h3 class="font-bold text-xl text-[#4a6c6f] mb-3">路米動物醫院</h3>
+                         <p class="text-sm text-gray-600 mb-2"><strong>特色：</strong>中西獸醫團隊聯合治療，設有獨立中醫科。</p>
+                         <p class="text-sm text-gray-600 mb-2"><strong>地址：</strong>台北市中山區建國北路二段89號</p>
+                         <p class="text-sm text-gray-600"><strong>電話：</strong>(02) 7756-5218 (預約制)</p>
+                     </div>
+                     <div class="bg-gray-50 p-6 rounded-lg border">
+                         <h3 class="font-bold text-xl text-[#4a6c6f] mb-3">安晴動物醫院 (林森院)</h3>
+                         <p class="text-sm text-gray-600 mb-2"><strong>特色：</strong>明確提供中獸醫針灸服務，貓友善環境。</p>
+                         <p class="text-sm text-gray-600 mb-2"><strong>地址：</strong>台北市中山區林森北路506號</p>
+                         <p class="text-sm text-gray-600"><strong>電話：</strong>(02) 2521-7758 (預約制)</p>
+                     </div>
+                 </div>
+                 <div class="mt-8">
+                     <h4 class="font-bold text-lg text-center text-[#5a8f7b] mb-4">如何與獸醫有效溝通？</h4>
+                     <p class="text-center text-gray-500 text-sm">預約諮詢時，可以主動詢問醫師對整合醫療的看法，並討論您想嘗試的輔助療法（如Omega-3、純露），共同制定最適合愛貓的照護計畫。</p>
+                 </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-gray-500 text-sm mt-12 mb-8 px-4">
+        <p>本互動指南內容僅供參考，不能取代專業獸醫師的診斷與治療。請務必遵循您的主治獸醫師的建議。</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                    }
+                });
+            }, { rootMargin: '-50% 0px -50% 0px', threshold: 0 });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            const cardTriggers = document.querySelectorAll('.card-expand-trigger');
+            cardTriggers.forEach(trigger => {
+                trigger.addEventListener('click', () => {
+                    const content = trigger.querySelector('.card-expand-content');
+                    content.classList.toggle('open');
+                    const arrow = trigger.querySelector('span');
+                    if(arrow) {
+                      arrow.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+                    }
+                });
+            });
+        });
+
+        const wrapLabel = (label, maxLength = 12) => {
+            if (label.length <= maxLength) return label;
+            const words = label.split('');
+            const lines = [];
+            let currentLine = '';
+            words.forEach(word => {
+                if ((currentLine + word).length > maxLength && currentLine.length > 0) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word;
+            });
+            lines.push(currentLine.trim());
+            return lines;
+        };
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+              return label.join('');
+            } else {
+              return label;
+            }
+        };
+
+        const chartColors = {
+            primary: '#4a6c6f',
+            secondary: '#5a8f7b',
+            accent: '#ab8d6f',
+            light: '#dcd3c9',
+            green: 'rgba(90, 143, 123, 0.8)',
+            yellow: 'rgba(255, 204, 0, 0.8)',
+            orange: 'rgba(255, 159, 64, 0.8)',
+            red: 'rgba(210, 77, 87, 0.8)',
+        };
+        
+        const foodSuitabilityData = {
+            labels: [
+                wrapLabel('商業慕斯/肉泥主食罐'),
+                wrapLabel('獸醫處方恢復罐'),
+                wrapLabel('自製雞/魚肉泥'),
+                wrapLabel('泡軟的乾飼料'),
+                wrapLabel('人類肉類嬰兒食品(誘食)'),
+                wrapLabel('$Omega-3$ 魚油(獸醫指導)'),
+                wrapLabel('益生菌(獸醫指導)'),
+            ],
+            scores: [5, 5, 4, 4, 3, 5, 5]
+        };
+
+        const foodSuitabilityCtx = document.getElementById('foodSuitabilityChart').getContext('2d');
+        new Chart(foodSuitabilityCtx, {
+            type: 'bar',
+            data: {
+                labels: foodSuitabilityData.labels,
+                datasets: [{
+                    label: '適用性評分',
+                    data: foodSuitabilityData.scores,
+                    backgroundColor: 'rgba(90, 143, 123, 0.7)',
+                    borderColor: 'rgba(90, 143, 123, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 5,
+                        grid: { color: '#eef0f2' }
+                    },
+                    y: {
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { title: tooltipTitleCallback } }
+                }
+            }
+        });
+
+        const safetySpectrumData = {
+            labels: [
+                wrapLabel('貓科費洛蒙擴香'), 
+                wrapLabel('純露擴香/噴霧'), 
+                wrapLabel('精油擴香(水氧機)'), 
+                wrapLabel('精油擴香(被動)'), 
+                wrapLabel('精油直接塗抹')
+            ],
+            scores: [10, 8, 3, 2, 0]
+        };
+        
+        const safetySpectrumCtx = document.getElementById('safetySpectrumChart').getContext('2d');
+        new Chart(safetySpectrumCtx, {
+            type: 'bar',
+            data: {
+                labels: safetySpectrumData.labels,
+                datasets: [{
+                    label: '安全分數',
+                    data: safetySpectrumData.scores,
+                    backgroundColor: (context) => {
+                        const value = context.raw;
+                        if (value >= 8) return chartColors.green;
+                        if (value >= 5) return chartColors.yellow;
+                        if (value >= 2) return chartColors.orange;
+                        return chartColors.red;
+                    },
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 10,
+                        ticks: {
+                           callback: function(value, index, values) {
+                               if (value === 0) return '高風險';
+                               if (value === 5) return '謹慎';
+                               if (value === 10) return '安全';
+                               return null;
+                           }
+                        },
+                        grid: { color: '#eef0f2' }
+                    },
+                    y: {
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { title: tooltipTitleCallback } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
